@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+# coding: utf-8
 import json
 import uuid
 
@@ -12,10 +14,10 @@ class LoginHandler(RequestHandler):
         'id': 1,
         'name': 'disen',
         'pwd': '123',
-        'last_ login_ device': 'Android 5.1 OnePlus5'
+        'last_login_device': 'Android 5.1 OnePlus5'
     }]
 
-    def get(self):
+    def post(self):
         # 读取json数据
         bytes = self.request.body  # 字节类型
         print(bytes)
@@ -44,12 +46,14 @@ class LoginHandler(RequestHandler):
             else:
                 resp_data['msg'] = '查无此用户'
 
-            self.write(resp_data)  # write()函数可接收str, dict, list
+            self.write(resp_data) # write()函数可接收str, dict, list
             self.set_header('Content-Type', 'application/json')
         else:
-            self.write('upload data 必须是json格式')
+            self.write('uppload data 必须是json格式')
 
-    def post(self):
+        self.cors()
+
+    def get(self):
         pass
 
     def put(self):
@@ -60,8 +64,8 @@ class LoginHandler(RequestHandler):
 
     def cors(self):
         self.set_header('Access-Control-Allow-Origin', '*')
-        self.set_header('Access-Control-Allow-Handler', 'x-request-with')
-        self.set_header('Access-Control-Allow-Method', 'POST, GET, PUT, DELETE')
+        self.set_header('Access-Control-Allow-Headers', 'x-requested-with')
+        self.set_header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE')
 
     def on_finish(self):
         pass
@@ -69,19 +73,21 @@ class LoginHandler(RequestHandler):
 
 def make_app():
     return Application(
-        handler=[
-            ('/login', LoginHandler),
-                ],
+        handlers=[
+            ('/user', LoginHandler),
+        ],
         default_host=options.h)
 
 
 if __name__ == '__main__':
+    # 定义命令行参数
     define('p', default=8000, type=int, help='绑定的port端口')
-    define('h', default='localhost', type=str, help='绑定的host端口')
+    define('h', default='localhost', type=str, help='绑定主机ip')
 
-    parse_command_line()   # 解析命令行参数
+    parse_command_line()  # 解释命令行参数
+
     app = make_app()
     app.listen(options.p)
 
-    print('Running Http://%s:%s' % (options.h, options.p))
+    print('Running http://%s:%s' % (options.h, options.p))
     IOLoop.current().start()
